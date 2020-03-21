@@ -154,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="Book.h" />
     <ClInclude Include="Inventory.h" />
+    <ClInclude Include="Library.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
