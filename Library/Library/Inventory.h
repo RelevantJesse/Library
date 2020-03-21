@@ -2,25 +2,24 @@
 
 #include "Book.h"
 #include <vector>
+#include "CheckInOrOutResult.h"
 
 class Inventory
 {
 private:
 	std::vector<Book> Books;
-
-public:
-
 	int MaxBookId;
 
+public:
 	Inventory();
 
-	int GetNextBookId();
+	void DisplayAllBooks();
+	void DisplayCheckedOutBooks();
 	int NumberOfBooks();
-	Book* GetBookByIndex(int index);
+	Book GetBookByIndex(int index);
 	void AddBook(Book book);
 	void RemoveBook(std::string title);
 	int FindBookByTitle(std::string title);
-	void CheckOutBook(Book* book);
-	void CheckInBook(Book* book);	
+	CheckInOrOutResult CheckInOrOutBook(std::string title, bool checkOut);
 };
 

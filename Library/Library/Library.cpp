@@ -30,66 +30,47 @@ void AddNewBook()
 	string author;
 	getline(cin, author);
 
-	int id = _inventory.GetNextBookId();
-
-	Book newBook(id, title, author);
+	Book newBook( title, author);
 
 	_inventory.AddBook(newBook);
 }
 
 void ListAllBooks()
 {
-	cout << "\nID\tTitle\tAuthor" << endl;
-	for (int i = 0; i < _inventory.NumberOfBooks(); i++)
-	{
-		cout << _inventory.GetBookByIndex(i)->Id << "\t" << _inventory.GetBookByIndex(i)->Title << "\t" << _inventory.GetBookByIndex(i)->Author << endl;
-	}
-	cout << endl;
+	_inventory.DisplayAllBooks();
 }
 
-void CheckInOrOutBook(bool checkIn)
+void CheckInOrOutBook(bool checkOut)
 {
 	string inOrOut;
-	if (checkIn)
+	if (checkOut)
 	{
-		inOrOut = "in";
+		inOrOut = "out";		
 	}
 	else
 	{
-		inOrOut = "out";
+		inOrOut = "in";
 	}
 
 	cout << "Enter a book title to check " + inOrOut + ": ";
 	string title;
 	getline(cin, title);
 
-	int foundBookIndex = _inventory.FindBookByTitle(title);
+	CheckInOrOutResult result = _inventory.CheckInOrOutBook(title, checkOut);
 
-	if (foundBookIndex >= 0)
+	if (result == CheckInOrOutResult::BookNotFound)
 	{
-		Book* foundBook = _inventory.GetBookByIndex(foundBookIndex);
-
-		if (!foundBook->CheckedOut == checkIn)
-		{
-			cout << "Book already checked " + inOrOut << endl;
-			return;
-		}
-
-		if (checkIn)
-		{
-			_inventory.CheckInBook(foundBook);
-		}
-		else
-		{
-			_inventory.CheckOutBook(foundBook);
-		}
-
+		cout << "Book not found";
+	}
+	else if(result == CheckInOrOutResult::Success)
+	{
 		cout << "Book checked " + inOrOut + "!" << endl;
 	}
 	else
 	{
-		cout << "Book not found" << endl;
+		cout << "Book failed checking " + inOrOut + "!" << endl;
 	}
+
 }
 
 void RemoveBook()
@@ -98,23 +79,12 @@ void RemoveBook()
 	string title;
 	getline(cin, title);
 
-	Book book;
-	book.Title = title;
-
 	_inventory.RemoveBook(title);
 }
 
 void DisplayCheckedOutBooks()
 {
-	cout << "\nID\tTitle\tAuthor" << endl;
-	for (int i = 0; i < _inventory.NumberOfBooks(); i++)
-	{
-		if (_inventory.GetBookByIndex(i)->CheckedOut)
-		{
-			cout << _inventory.GetBookByIndex(i)->Id << "\t" << _inventory.GetBookByIndex(i)->Title << "\t" << _inventory.GetBookByIndex(i)->Author << endl;
-		}		
-	}
-	cout << endl;
+	_inventory.DisplayCheckedOutBooks();
 }
 
 int main()

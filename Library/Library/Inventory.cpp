@@ -6,30 +6,30 @@ Inventory::Inventory()
 	Inventory::MaxBookId = 0;
 }
 
-int Inventory::GetNextBookId()
-{
-	Inventory::MaxBookId++;
-	return Inventory::MaxBookId;
-}
-
 int Inventory::NumberOfBooks()
 {
 	return Inventory::Books.size();
 }
 
-Book* Inventory::GetBookByIndex(int index)
+Book Inventory::GetBookByIndex(int index)
 {
-	return &Inventory::Books[index];
+	return Inventory::Books[index];
 }
 
 void Inventory::AddBook(Book book)
 {
+	Inventory::MaxBookId++;
+
+	book.SetBookId(MaxBookId);
+
 	Inventory::Books.push_back(book);
 }
 
 void Inventory::RemoveBook(std::string title)
 {
-	std::vector<Book>::iterator it = std::find(Inventory::Books.begin(), Inventory::Books.end(), Book(0, title, ""));
+	//TODO: Handle MaxBookId when removing
+
+	std::vector<Book>::iterator it = std::find(Inventory::Books.begin(), Inventory::Books.end(), Book(title, ""));
 	if (it != Inventory::Books.end())
 	{
 		Inventory::Books.erase(it);
@@ -39,7 +39,7 @@ void Inventory::RemoveBook(std::string title)
 
 int Inventory::FindBookByTitle(std::string title)
 {
-	std::vector<Book>::iterator it = std::find(Inventory::Books.begin(), Inventory::Books.end(), Book(0, title, ""));
+	std::vector<Book>::iterator it = std::find(Inventory::Books.begin(), Inventory::Books.end(), Book(title, ""));
 	if (it == Inventory::Books.end())
 	{
 		return -1;
@@ -50,12 +50,38 @@ int Inventory::FindBookByTitle(std::string title)
 	return index;
 }
 
-void Inventory::CheckOutBook(Book* book)
+CheckInOrOutResult Inventory::CheckInOrOutBook(std::string title, bool checkOut)
 {
-	book->CheckedOut = true;
+	int foundBookIndex = FindBookByTitle(title);
+
+	if (foundBookIndex < 0)
+	{
+		return CheckInOrOutResult::BookNotFound;
+	}
+
+	Books[foundBookIndex].CheckInOrOut(checkOut);
+	return CheckInOrOutResult::Success;
 }
 
-void Inventory::CheckInBook(Book* book)
+void Inventory::DisplayAllBooks()
 {
-	book->CheckedOut = false;
+	std::cout << "\nID\tTitle\tAuthor" << std::endl;
+	for (int i = 0; i < NumberOfBooks(); i++)
+	{
+		Books[i].DisplayBook();
+	}
+	std::cout << std::endl;
+}
+
+void Inventory::DisplayCheckedOutBooks()
+{
+	std::cout << "\nID\tTitle\tAuthor" << std::endl;
+	for (int i = 0; i < NumberOfBooks(); i++)
+	{
+		if (GetBookByIndex(i).IsCheckedOut())
+		{
+			Books[i].DisplayBook();
+		}
+	}
+	std::cout << std::endl;
 }
