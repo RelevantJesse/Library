@@ -150,12 +150,15 @@
     <ClCompile Include="Book.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Library.cpp" />
+    <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Book.h" />
     <ClInclude Include="CheckInOrOutResult.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Library.h" />
+    <ClInclude Include="Role.h" />
+    <ClInclude Include="User.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
