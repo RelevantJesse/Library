@@ -4,22 +4,21 @@
 
 class Book
 {
-private:
-	int Id;
+private:	
 	std::string Title;
 	std::string Author;
 	bool CheckedOut;
 
 public:
-	
+	int Id;
 
 	Book();
 	Book(std::string title, std::string author);
 
-	void SetBookId(int id);
 	void CheckInOrOut(bool checkOut);
 	void DisplayBook();
 	bool IsCheckedOut();
+	std::string GetBookFileData();
 
 	bool operator==(const Book &book) const
 	{

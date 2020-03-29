@@ -3,12 +3,75 @@
 #include "Inventory.h"
 #include <string>
 #include "User.h"
+#include <fstream>
 
 using namespace std;
 
 Inventory _inventory;
 vector<User> _users;
 User _loggedInUser;
+
+Role GetRoleFromIntVal(int roleVal)
+{
+	Role outRole;
+
+	if (roleVal == 0)
+	{
+		outRole = Role::Admin;
+	}
+	else if (roleVal == 1)
+	{
+		outRole = Role::Employee;
+	}
+	else
+	{
+		outRole = Role::Member;
+	}
+
+	return outRole;
+}
+
+void LoadUsers()
+{
+	ifstream inFile("users.txt");
+
+	string lineData[2];
+	// lineData[0] = username
+	// lineData[1] = role int val
+
+	string userLine;
+	while (getline(inFile, userLine))
+	{
+		size_t index = userLine.find('|');
+		lineData[0] = userLine.substr(0, index);
+		lineData[1] = userLine.substr(index + 1);
+
+		User loadedUser;
+		loadedUser.Username = lineData[0];
+		loadedUser.Role = GetRoleFromIntVal(stoi(lineData[1]));
+
+		_users.push_back(loadedUser);
+	}
+}
+
+int GetIntValFromRole(Role role)
+{
+	int roleVal = -1;
+	if (role == Role::Admin)
+	{
+		roleVal = 0;
+	}
+	else if (role == Role::Employee)
+	{
+		roleVal = 1;
+	}
+	else if (role == Role::Member)
+	{
+		roleVal = 2;
+	}
+
+	return roleVal;
+}
 
 void CreateAccount()
 {
@@ -42,6 +105,10 @@ void CreateAccount()
 		newUser.Role = Role::Member;
 
 	_users.push_back(newUser);
+
+	ofstream oFile("users.txt", ios_base::app);
+	oFile << newUser.Username << "|" << GetIntValFromRole(newUser.Role) << endl;
+	oFile.close();
 }
 
 void Login()
@@ -59,20 +126,23 @@ void Login()
 		CreateAccount();
 	}
 
-	cout << "Enter username: ";
-	string username;
-	getline(cin, username);
-
-	User user;
-	user.Username = username;
-
-	vector<User>::iterator it = find(_users.begin(), _users.end(), user);
-
-	if (it != _users.end())
+	while (true)
 	{
-		_loggedInUser = _users[it - _users.begin()];		
-	}
+		cout << "Enter username: ";
+		string username;
+		getline(cin, username);
 
+		User user;
+		user.Username = username;
+
+		vector<User>::iterator it = find(_users.begin(), _users.end(), user);
+
+		if (it != _users.end())
+		{
+			_loggedInUser = _users[it - _users.begin()];
+			break;
+		}
+	}
 }
 
 void DisplayMainMenu()
@@ -168,7 +238,10 @@ void DisplayCheckedOutBooks()
 
 int main()
 {
+	LoadUsers();
 	Login();
+
+	_inventory.LoadBooks();
 
 	while (true) 
 	{

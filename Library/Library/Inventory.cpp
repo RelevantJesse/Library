@@ -1,10 +1,7 @@
 #include "Inventory.h"
 #include <vector>
-
-Inventory::Inventory()
-{
-	Inventory::MaxBookId = 0;
-}
+#include <fstream>
+#include <string>
 
 int Inventory::NumberOfBooks()
 {
@@ -18,17 +15,58 @@ Book Inventory::GetBookByIndex(int index)
 
 void Inventory::AddBook(Book book)
 {
-	Inventory::MaxBookId++;
+	int nextBookId = 0;
+	if (Books.size() > 0)
+		nextBookId = Books.back().Id + 1;
 
-	book.SetBookId(MaxBookId);
+	book.Id = nextBookId;
 
 	Inventory::Books.push_back(book);
+
+	std::ofstream oFile("books.txt", std::ios_base::app);
+	oFile << book.GetBookFileData() << std::endl;
+	oFile.close();
+}
+
+void Inventory::LoadBooks()
+{
+	std::ifstream inFile("books.txt");
+
+	std::string bookData[4];
+	// bookData[0] = Id
+	// bookData[1] = Title
+	// bookData[2] = Author
+	// bookData[3] = checked out
+
+	std::string bookLine;
+	while (std::getline(inFile, bookLine))
+	{
+		size_t nextIndex = bookLine.find('|');
+		bookData[0] = bookLine.substr(0, nextIndex);
+
+		size_t prevIndex = nextIndex;
+		nextIndex = bookLine.find('|', prevIndex + 1);
+
+		bookData[1] = bookLine.substr(prevIndex+1, nextIndex - prevIndex - 1);
+		prevIndex = nextIndex;
+		nextIndex = bookLine.find('|', prevIndex + 1);
+
+		bookData[2] = bookLine.substr(prevIndex + 1, nextIndex - prevIndex - 1);
+		prevIndex = nextIndex;
+		nextIndex = bookLine.find('|', prevIndex + 1);
+
+		bookData[3] = bookLine.substr(prevIndex + 1, nextIndex - prevIndex - 1);
+
+		Book loadedBook(bookData[1], bookData[2]);
+		loadedBook.Id = stoi(bookData[0]);
+		loadedBook.CheckInOrOut(stoi(bookData[3]));
+
+		Books.push_back(loadedBook);
+	}
 }
 
 void Inventory::RemoveBook(std::string title)
 {
-	//TODO: Handle MaxBookId when removing
-
 	std::vector<Book>::iterator it = std::find(Inventory::Books.begin(), Inventory::Books.end(), Book(title, ""));
 	if (it != Inventory::Books.end())
 	{
