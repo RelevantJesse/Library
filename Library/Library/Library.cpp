@@ -150,18 +150,19 @@ void DisplayMainMenu()
 	cout << endl;
 	cout << "Choose an option:" << endl;
 
+	cout << "1. List all books" << endl;
+	cout << "2. Check out book" << endl;
+	cout << "3. Check in book" << endl;
+
 	if (_loggedInUser.Role == Role::Employee
 		|| _loggedInUser.Role == Role::Admin)
 	{
-		cout << "1. Add book" << endl;
+		cout << "4. Add book" << endl;
 		cout << "5. Remove book from library" << endl;
 		cout << "6. List all checked out books" << endl;
 	}
-	
-	cout << "2. List all books" << endl;
-	cout << "3. Check out book" << endl;
-	cout << "4. Check in book" << endl;
 
+	cout << "9. Log out" << endl;
 	cout << "0. Exit" << endl;
 }
 
@@ -175,7 +176,7 @@ void AddNewBook()
 	string author;
 	getline(cin, author);
 
-	Book newBook( title, author);
+	Book newBook(title, author);
 
 	_inventory.AddBook(newBook);
 }
@@ -190,7 +191,7 @@ void CheckInOrOutBook(bool checkOut)
 	string inOrOut;
 	if (checkOut)
 	{
-		inOrOut = "out";		
+		inOrOut = "out";
 	}
 	else
 	{
@@ -207,7 +208,7 @@ void CheckInOrOutBook(bool checkOut)
 	{
 		cout << "Book not found";
 	}
-	else if(result == CheckInOrOutResult::Success)
+	else if (result == CheckInOrOutResult::Success)
 	{
 		cout << "Book checked " + inOrOut + "!" << endl;
 	}
@@ -239,44 +240,51 @@ void DisplayCheckedOutBooks()
 int main()
 {
 	LoadUsers();
-	Login();
 
-	_inventory.LoadBooks();
-
-	while (true) 
+	while (true)
 	{
-		DisplayMainMenu();
+		Login();
 
-		int input;
-		cin >> input;
-		cin.ignore();
-
-		switch (input)
+		_inventory.LoadBooks();
+		bool isLoggedIn = true;
+		while (isLoggedIn)
 		{
-		case 0:
-			cout << "Thank you. Goodbye";
-			return 0;
-		case 1:
-			AddNewBook();
-			break;
-		case 2:
-			ListAllBooks();
-			break;
-		case 3:
-			CheckInOrOutBook(true);
-			break;
-		case 4:
-			CheckInOrOutBook(false);
-			break;
-		case 5:
-			RemoveBook();
-			break;
-		case 6:
-			DisplayCheckedOutBooks();
-			break;
-		default:
-			cout << "Invalid selection. Try again." << endl;
-			break;
+			DisplayMainMenu();
+
+			int input;
+			cin >> input;
+			cin.ignore();
+
+			switch (input)
+			{
+			case 0:
+				cout << "Thank you. Goodbye";
+				return 0;
+			case 1:
+				ListAllBooks();
+				break;
+			case 2:
+				CheckInOrOutBook(true);
+				break;
+			case 3:
+				CheckInOrOutBook(false);
+				break;
+			case 4:
+				AddNewBook();
+				break;
+			case 5:
+				RemoveBook();
+				break;
+			case 6:
+				DisplayCheckedOutBooks();
+				break;
+			case 9:
+				isLoggedIn = false;
+				break;
+			default:
+				cout << "Invalid selection. Try again." << endl;
+				break;
+			}
 		}
 	}
 }
