@@ -1,2 +1,2 @@
 0|a|b|0
-1|Harry Potter|J.K. Rowling|0
+1|Harry Potter|J.K. Rowling|1
